@@ -1,0 +1,199 @@
+{% include 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #0f141a;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .card {
+        background: rgba(30, 42, 56, 0.92);
+        backdrop-filter: blur(8px);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-title {
+        font-family: 'Playfair Display', serif;
+        color: #F4C430;
+        font-weight: 700;
+    }
+
+    .btn-success, .btn-outline-success {
+        background: linear-gradient(135deg, #F4C430, #ffb300);
+        border: none;
+        color: #2d1b00;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-success:hover, .btn-outline-success:hover {
+        background: linear-gradient(135deg, #ffb300, #F4C430);
+        color: black;
+        box-shadow: 0 5px 15px rgba(244, 196, 48, 0.3);
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(244, 196, 48, 0.2);
+        border-radius: 0.5rem;
+        color: white;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .table {
+        color: white;
+    }
+
+    .table thead {
+        background: rgba(244, 196, 48, 0.2);
+        color: #F4C430;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-content {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border: none;
+        color: #000;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+        color: #000;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card fade-in">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="card-title mb-0">🍿 Snack Station Inventory</h3>
+                <a href="{% url 'snack_add' %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Add New
+                </a>
+            </div>
+
+            <form method="get" class="d-flex mb-3" role="search">
+                <input
+                    type="text"
+                    name="q"
+                    class="form-control me-2 shadow-sm"
+                    style="width: 30%;"
+                    placeholder="🔍 Search snack items..."
+                    value="{{ query|default:'' }}"
+                >
+                <button class="btn btn-outline-success" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle text-center">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Balance</th>
+                            <th>In</th>
+                            <th>Out</th>
+                            <th>Unit Price</th>
+                            <th>Total Balance</th>
+                            <th>Total Cost</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in snack_stocks %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.balance }}</td>
+                            <td>{{ item.stock_in }}</td>
+                            <td>{{ item.stock_out }}</td>
+                            <td>₱{{ item.unit_price|floatformat:2 }}</td>
+                            <td>{{ item.total_balance }}</td>
+                            <td>₱{{ item.total_cost|floatformat:2 }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="{% url 'snack_edit' item.id %}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <form method="post" action="{% url 'snack_delete' item.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn btn-danger" onclick="openModal(this)">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No snack items found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'export_snack_csv' %}?q={{ request.GET.q }}" class="btn btn-sm btn-success">
+                    <i class="bi bi-download"></i> Export CSV
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal HTML -->
+<div id="confirmModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1050;">
+    <div class="modal-content bg-white p-4 rounded shadow" style="max-width: 400px; margin: 10% auto;">
+        <p class="mb-4" style="font-size: 1.1rem; color: black;">
+            Are you sure you want to delete this record?
+        </p>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentForm = null;
+
+    function openModal(button) {
+        currentForm = button.closest('form');
+        document.getElementById('confirmModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        currentForm = null;
+        document.getElementById('confirmModal').style.display = 'none';
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+        if (currentForm) currentForm.submit();
+    });
+
+    window.onclick = function (event) {
+        const modal = document.getElementById('confirmModal');
+        if (event.target === modal) closeModal();
+    };
+</script>
+{% endblock %}

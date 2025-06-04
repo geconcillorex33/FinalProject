@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #1E2A38;
+        --secondary-color: #34495E;
+        --accent-color: #F4C430;
+        --bg-glass: rgba(30, 42, 56, 0.92);
+        --light-neutral: #f5e6d3;
+    }
+
+    .dashboard-header {
+        font-family: 'Playfair Display', serif;
+        color: var(--accent-color);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .custom-card {
+        background: var(--bg-glass);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .custom-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        border-color: rgba(244, 196, 48, 0.3);
+    }
+
+    .custom-card .card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-bottom: 1px solid var(--accent-color);
+        color: var(--accent-color);
+        font-weight: 600;
+    }
+
+    .custom-card .btn {
+        background-color: var(--accent-color);
+        color: #2d1b00;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+    .custom-card .btn:hover {
+        background-color: #ffb300;
+        color: #1e1e1e;
+    }
+
+    .dashboard-bg {
+        background-color: #0f141a;
+        padding: 2rem;
+        border-radius: 1rem;
+    }
+
+    .footer-custom {
+        background-color: transparent;
+        font-family: 'Playfair Display', serif;
+        color: var(--accent-color);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="dashboard-bg">
+    <h2 class="dashboard-header">📊 Inventory Dashboard Overview</h2>
+
+    <div class="row g-4">
+        <!-- Grocery -->
+        <div class="col-lg-4 col-md-6">
+            <div class="custom-card card h-100">
+                <div class="card-header">🛒 Grocery Stocks</div>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <p class="card-text">Total Items: <span class="fw-bold">{{ groceries.count }}</span></p>
+                    <a href="{% url 'grocery_list' %}" class="btn mt-auto w-100">View Groceries</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kitchen -->
+        <div class="col-lg-4 col-md-6">
+            <div class="custom-card card h-100">
+                <div class="card-header">🍳 Kitchen Stocks</div>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <p class="card-text">Total Items: <span class="fw-bold">{{ kitchens.count }}</span></p>
+                    <a href="{% url 'kitchen_list' %}" class="btn mt-auto w-100">View Kitchen Stocks</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snacks -->
+        <div class="col-lg-4 col-md-6">
+            <div class="custom-card card h-100">
+                <div class="card-header">🍿 Snack Stocks</div>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <p class="card-text">Total Items: <span class="fw-bold">{{ snacks.count }}</span></p>
+                    <a href="{% url 'snack_list' %}" class="btn mt-auto w-100">View Snacks</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center py-4 mt-5 border-top shadow-sm footer-custom">
+    <div class="container">
+        <p class="mb-1 fw-semibold">📦 Pateus Inventory Management System</p>
+        <p class="mb-0 small">
+            &copy; {{ now|date:"Y" }} All rights reserved &middot; Designed for simplicity and clarity
+        </p>
+    </div>
+</footer>
+{% endblock %}
