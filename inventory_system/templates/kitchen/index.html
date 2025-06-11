@@ -114,10 +114,6 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Balance</th>
-                            <th>In</th>
-                            <th>Out</th>
-                            <th>Remarks</th>
                             <th>Unit Price</th>
                             <th>Total Balance</th>
                             <th>Total Cost</th>
@@ -127,28 +123,33 @@
                     <tbody>
                         {% for item in items %}
                         <tr>
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.balance }}</td>
-                            <td>{{ item.stock_in }}</td>
-                            <td>{{ item.stock_out }}</td>
-                            <td>{{ item.remarks }}</td>
-                            <td>₱{{ item.unit_price|floatformat:2 }}</td>
-                            <td>{{ item.total_balance }}</td>
-                            <td>₱{{ item.total_cost|floatformat:2 }}</td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a href="{% url 'kitchen_edit' item.id %}" class="btn btn-sm btn-warning">
-                                        <i class="bi bi-pencil-square"></i> Edit
-                                    </a>
-                                    <form method="post" action="{% url 'kitchen_delete' item.id %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="openModal(this)">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                                <td>
+                                    {% if item.total_balance < 10 %}
+                                        <span style="color: red;">{{ item.name }}</span>
+                                    {% else %}
+                                        {{ item.name }}
+                                    {% endif %}
+                                </td>
+                                <td>₱{{ item.unit_price|floatformat:2 }}</td>
+                                <td>{{ item.total_balance }}</td>
+                                <td>₱{{ item.total_cost|floatformat:2 }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="{% url 'kitchen_stock_in' item.id %}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-dash"></i> Stock_In
+                                        </a>
+                                        <a href="{% url 'kitchen_stock_out' item.id %}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-dash"></i> Stock_Out
+                                        </a>
+                                        <form method="post" action="{% url 'kitchen_delete' item.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="openModal(this)">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
                         {% empty %}
                         <tr>
                             <td colspan="9" class="text-center text-muted">No kitchen items found.</td>
@@ -156,8 +157,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <a href="{% url 'export_kitchen_csv' %}?q={{ request.GET.q }}" class="btn btn-sm btn-success">
-                    <i class="bi bi-download"></i> Export CSV
+                <a href="{% url 'kitchen_monthly_summary' %}?q={{ request.GET.q }}" class="btn btn-sm btn-success">
+                    <i class="bi bi-download"></i> records
                 </a>
             </div>
         </div>

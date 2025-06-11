@@ -61,13 +61,20 @@
         border-radius: 1rem;
     }
 
-    .footer-custom {
-        background-color: transparent;
-        font-family: 'Playfair Display', serif;
-        color: var(--accent-color);
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        font-size: 1.2rem;
-    }
+.footer-custom {
+    background-color: #0f141a; /* Match .dashboard-bg for seamless look */
+    font-family: 'Playfair Display', serif;
+    color: var(--accent-color); /* Clear, elegant gold tone */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    font-size: 1.3rem; /* Increased size for better readability */
+    border-top: 2px solid rgba(244, 196, 48, 0.4); /* Soft accent-colored border */
+}
+
+.footer-custom .small {
+    font-size: 1.05rem; /* Override small for readability */
+    color: rgba(255, 255, 255, 0.85); /* Softer white for clarity */
+}
+
 </style>
 
 <div class="dashboard-bg">

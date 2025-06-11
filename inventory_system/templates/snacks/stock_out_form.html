@@ -54,7 +54,6 @@
         border-radius: 0.5rem;
         padding: 0.4rem 0.8rem;
         color: white;
-        transition: all 0.3s ease;
         font-size: 0.85rem;
     }
 
@@ -62,7 +61,6 @@
         background: rgba(255, 255, 255, 0.12);
         border-color: var(--accent-color);
         box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.3);
-        color: white;
     }
 
     input.form-control[readonly] {
@@ -96,14 +94,6 @@
         margin-right: 0.5rem;
     }
 
-    .row.g-2 > div {
-        margin-bottom: 0.6rem;
-    }
-
-    .d-grid {
-        margin-top: 1.2rem;
-    }
-
     .btn-secondary {
         background-color: #34495E;
         color: white;
@@ -113,52 +103,33 @@
 
     .btn-secondary:hover {
         background-color: #2c3e50;
-        color: white;
         box-shadow: 0 4px 12px rgba(52, 73, 94, 0.4);
+    }
+
+    .d-grid {
+        margin-top: 1.2rem;
     }
 </style>
 
 <div class="add-stock-card shadow-sm">
     <h4 class="card-title">
-        <i class="bi bi-plus-circle-fill me-2"></i> Add Snack Stock
+        <i class="bi bi-box-arrow-up me-2"></i> Stock Out
     </h4>
-    <form method="post" novalidate>
+    <form method="post">
         {% csrf_token %}
         <div class="row g-2">
             <div class="col-12">
-                <label for="name" class="form-label small">Name</label>
-                <input type="text" name="name" id="name" class="form-control form-control-sm" required>
+                <label class="form-label small">Item Name</label>
+                <input type="text" class="form-control" value="{{ item.name }}" readonly>
             </div>
-
-            <div class="col-6">
-                <label for="balance" class="form-label small">Balance</label>
-                <input type="number" name="balance" id="balance" class="form-control form-control-sm" required>
-            </div>
-
-            <div class="col-6">
-                <label for="unit_price" class="form-label small">Unit Price</label>
-                <input type="number" name="unit_price" id="unit_price" step="0.01" class="form-control form-control-sm" required>
-            </div>
-
             <div class="col-12">
-                <label for="remarks" class="form-label small">Remarks</label>
-                <input type="text" name="remarks" id="remarks" class="form-control form-control-sm">
-            </div>
-
-            <div class="col-6">
-                <label for="total_balance" class="form-label small">Total Balance</label>
-                <input type="number" name="total_balance" id="total_balance" class="form-control form-control-sm" readonly placeholder="Auto-calculated">
-            </div>
-
-            <div class="col-6">
-                <label for="total_cost" class="form-label small">Total Cost</label>
-                <input type="number" name="total_cost" id="total_cost" class="form-control form-control-sm" readonly placeholder="Auto-calculated">
+                <label for="stock_out" class="form-label small">Quantity Out</label>
+                <input type="number" name="stock_out" id="stock_out" class="form-control" required>
             </div>
         </div>
-
         <div class="d-grid gap-2 col-8 mx-auto mt-4">
             <button type="submit" class="btn btn-primary btn-sm rounded-pill">
-                <i class="bi bi-save me-1"></i> Save
+                <i class="bi bi-dash-circle"></i> Reduce Stock
             </button>
         </div>
         <div class="d-grid gap-2 col-8 mx-auto mb-2">
@@ -168,26 +139,4 @@
         </div>
     </form>
 </div>
-
-<script>
-    const balance = document.getElementById('balance');
-    const totalBalance = document.getElementById('total_balance');
-    const unitPrice = document.getElementById('unit_price');
-    const totalCost = document.getElementById('total_cost');
-
-    function calculateTotals() {
-        const bal = parseFloat(balance.value) || 0;
-        const unit = parseFloat(unitPrice.value) || 0;
-        const totalBal = bal;
-        totalBalance.value = totalBal;
-        totalCost.value = (totalBal * unit).toFixed(2);
-    }
-
-    [balance, unitPrice].forEach(el => {
-        el.addEventListener('input', calculateTotals);
-    });
-
-    calculateTotals();
-</script>
-
 {% endblock %}

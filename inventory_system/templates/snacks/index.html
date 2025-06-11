@@ -114,9 +114,6 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Balance</th>
-                            <th>In</th>
-                            <th>Out</th>
                             <th>Unit Price</th>
                             <th>Total Balance</th>
                             <th>Total Cost</th>
@@ -124,36 +121,42 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in snack_stocks %}
+                        {% for stock in snack_stocks %}
                         <tr>
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.balance }}</td>
-                            <td>{{ item.stock_in }}</td>
-                            <td>{{ item.stock_out }}</td>
-                            <td>₱{{ item.unit_price|floatformat:2 }}</td>
-                            <td>{{ item.total_balance }}</td>
-                            <td>₱{{ item.total_cost|floatformat:2 }}</td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a href="{% url 'snack_edit' item.id %}" class="btn btn-sm btn-warning">
-                                        <i class="bi bi-pencil-square"></i> Edit
-                                    </a>
-                                    <form method="post" action="{% url 'snack_delete' item.id %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="button" class="btn btn-danger" onclick="openModal(this)">Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                                    <td>
+                                        {% if stock.total_balance < 10 %}
+                                            <span style="color: red;">{{ stock.name }}</span>
+                                        {% else %}
+                                            {{ stock.name }}
+                                        {% endif %}
+                                    </td>
+                                    <td>₱{{ stock.unit_price|floatformat:2 }}</td>
+                                    <td>{{ stock.total_balance }}</td>
+                                    <td>₱{{ stock.total_cost|floatformat:2 }}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a href="{% url 'snack_stock_in' stock.id %}" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-box-arrow-in-down"></i> Stock In
+                                            </a>
+                                            <a href="{% url 'snack_stock_out' stock.id %}" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-box-arrow-up"></i> Stock Out
+                                            </a>
+                                            <form method="post" action="{% url 'snack_delete' stock.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="button" class="btn btn-danger" onclick="openModal(this)">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="8" class="text-center text-muted">No snack items found.</td>
+                            <td colspan="9" class="text-center text-muted">No snack items found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <a href="{% url 'export_snack_csv' %}?q={{ request.GET.q }}" class="btn btn-sm btn-success">
-                    <i class="bi bi-download"></i> Export CSV
+                <a href="{% url 'snack_monthly_summary' %}?q={{ request.GET.q }}" class="btn btn-sm btn-success">
+                    <i class="bi bi-download"></i> records
                 </a>
             </div>
         </div>
